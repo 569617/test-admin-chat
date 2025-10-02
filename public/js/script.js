@@ -71,13 +71,33 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.textContent = 'Не удалось связаться с сервером.';
         }
     });
-    
-    const messagesContainer = document.getElementById('messages');
 
-    function scrollToBottom() {
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    // --- ФУНКЦИИ УПРАВЛЕНИЯ САЙДБАРОМ НА МОБИЛЬНЫХ УСТРОЙСТВАХ ---
+    const isMobile = () => window.innerWidth <= 768;
+
+    // Показывает/скрывает сайдбар (гамбургер)
+    function toggleSidebar() {
+        if (isMobile()) {
+            sidebar.classList.toggle('is-open');
+        }
     }
 
+    // Скрывает сайдбар, когда открывается чат
+    function hideSidebar() {
+        if (isMobile()) {
+            sidebar.classList.remove('is-open');
+        }
+    }
+    hideSidebar(); 
+    // --- КОНЕЦ ФУНКЦИЙ УПРАВЛЕНИЯ САЙДБАРОМ ---
+    
+     // --- НОВОЕ: Обработчик кнопки-гамбургера ---
+    if (menuToggleButton) {
+        menuToggleButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleSidebar(); // Открывает/закрывает сайдбар
+        });
+    }
     // Прокрутка при отправке сообщения
     document.getElementById('chat-form').addEventListener('submit', () => {
     setTimeout(scrollToBottom, 100); // Даем DOM обновиться
