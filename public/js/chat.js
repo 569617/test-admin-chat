@@ -24,6 +24,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentChatUser = null;
 
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('overlay');
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+    }
+
+    // Открытие/закрытие сайдбара по клику на гамбургер
+    hamburger.addEventListener('click', () => {
+        if (sidebar.classList.contains('open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    // Закрытие при клике на overlay
+    overlay.addEventListener('click', closeSidebar);
+
+    // Закрытие при выборе чата
+    chatList.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+    });
+
+    overlay.addEventListener('click', closeSidebar);
+
+    chatList.addEventListener('click', () => {
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+    });
+
     // --- Отображение профиля и выход ---
     myUsernameDisplay.textContent = currentUser;
     logoutButton.addEventListener('click', () => {
