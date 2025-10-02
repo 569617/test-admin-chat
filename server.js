@@ -109,14 +109,23 @@ app.post('/chats', async (req, res) => {
 app.delete('/chats', async (req, res) => {
     try {
         const { currentUser, otherUser } = req.body;
-        // Удаляем другого из списка текущего
+
+        // 1. Удаляем чат из списков обоих пользователей
         let currentUserChats = await kv.get(`chats:${currentUser}`) || [];
         await kv.set(`chats:${currentUser}`, currentUserChats.filter(u => u !== otherUser));
-        // Удаляем текущего из списка другого
+        
         let otherUserChats = await kv.get(`chats:${otherUser}`) || [];
         await kv.set(`chats:${otherUser}`, otherUserChats.filter(u => u !== currentUser));
-        res.status(200).json({ message: "Чат удалён" });
-    } catch (error) { res.status(500).json({ message: "Ошибка на сервере" }); }
+
+        // --- НОВОЕ: Полностью удаляем историю сообщений ---
+        const roomName = [currentUser, otherUser].sort().join('-');
+        await kv.del(`messages:${roomName}`);
+        
+        res.status(200).json({ message: "Чат и история сообщений полностью удалены" });
+    } catch (error) { 
+        console.error("Ошибка при удалении чата:", error);
+        res.status(500).json({ message: "Ошибка на сервере" });
+    }
 });
 
 app.post('/chats/read', async (req, res) => {
@@ -146,6 +155,8 @@ app.get('/messages/:room', async (req, res) => {
 io.on('connection', (socket) => {
     socket.on('user connected', (username) => {
         onlineUsers.set(username, socket.id);
+        // Вот эта строка "кричит" всем остальным:
+        socket.broadcast.emit('user status changed', { username, isOnline: true }); 
     });
 
     socket.on('private message', async ({ to, message, from }) => {
