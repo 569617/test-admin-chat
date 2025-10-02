@@ -202,14 +202,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     // public/js/chat.js
 
-    socket.on('user status changed', ({ username, isOnline }) => {
-        const chatItem = chatList.querySelector(`[data-username="${username}"]`);
-        if (chatItem) {
-            const statusElement = chatItem.querySelector('.chat-status');
-            statusElement.textContent = isOnline ? 'Онлайн' : 'Оффлайн';
-            statusElement.className = `chat-status ${isOnline ? 'status-online' : 'status-offline'}`;
-        }
-    });
+socket.on('user status changed', ({ username, isOnline }) => {
+    const chatItem = chatList.querySelector(`[data-username="${username}"]`);
+    if (chatItem) {
+        const statusElement = chatItem.querySelector('.chat-status');
+        statusElement.textContent = isOnline ? 'Онлайн' : 'Оффлайн';
+        statusElement.className = `chat-status ${isOnline ? 'status-online' : 'status-offline'}`;
+    }
+});
 
     loadChatList();
 });

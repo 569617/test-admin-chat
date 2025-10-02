@@ -127,7 +127,18 @@ app.delete('/chats', async (req, res) => {
         res.status(500).json({ message: "Ошибка на сервере" });
     }
 });
-
+// НОВЫЙ эндпоинт для сохранения публичного ключа
+app.post('/public-key', async (req, res) => {
+    try {
+        const { username, publicKey } = req.body;
+        // Сохраняем ключ в базе под ключом public_key:имя_пользователя
+        await kv.set(`public_key:${username}`, publicKey);
+        res.status(200).json({ message: "Публичный ключ сохранён" });
+    } catch (error) {
+        console.error("Ошибка сохранения публичного ключа:", error);
+        res.status(500).json({ message: "Ошибка на сервере" });
+    }
+});
 app.post('/chats/read', async (req, res) => {
     try {
         const { currentUser, otherUser } = req.body;
