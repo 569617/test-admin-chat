@@ -19,7 +19,8 @@ const kv = createClient({
 app.use(helmet());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
-
+// --- Карта онлайн пользователей ---
+const onlineUsers = new Map();
 // --- Эндпоинты ---
 
 app.post('/register', async (req, res) => {
@@ -104,6 +105,19 @@ app.post('/chats', async (req, res) => {
         res.status(500).json({ message: "Ошибка на сервере" });
     }
 });
+// НОВЫЙ эндпоинт для удаления чата
+app.delete('/chats', async (req, res) => {
+    try {
+        const { currentUser, otherUser } = req.body;
+        // Удаляем другого из списка текущего
+        let currentUserChats = await kv.get(`chats:${currentUser}`) || [];
+        await kv.set(`chats:${currentUser}`, currentUserChats.filter(u => u !== otherUser));
+        // Удаляем текущего из списка другого
+        let otherUserChats = await kv.get(`chats:${otherUser}`) || [];
+        await kv.set(`chats:${otherUser}`, otherUserChats.filter(u => u !== currentUser));
+        res.status(200).json({ message: "Чат удалён" });
+    } catch (error) { res.status(500).json({ message: "Ошибка на сервере" }); }
+});
 
 app.post('/chats/read', async (req, res) => {
     try {
@@ -127,7 +141,6 @@ app.get('/messages/:room', async (req, res) => {
     }
 });
 
-const onlineUsers = new Map();
 
 // --- ЛОГИКА SOCKET.IO ---
 io.on('connection', (socket) => {
@@ -147,12 +160,16 @@ io.on('connection', (socket) => {
             io.to(toSocketId).emit('private message', messageData);
         }
     });
+    
 
     socket.on('disconnect', () => {
         for (let [username, id] of onlineUsers.entries()) {
-            if (id === socket.id) { onlineUsers.delete(username); break; }
+        if (id === socket.id) {
+            onlineUsers.delete(username);
+            io.emit('user status changed', { username, isOnline: false }); // Уведомляем всех, что пользователь оффлайн
+            break;
         }
-    });
+        }
 });
 
 const PORT = process.env.PORT || 3000;
