@@ -71,4 +71,15 @@ document.addEventListener('DOMContentLoaded', () => {
             loginError.textContent = 'Не удалось связаться с сервером.';
         }
     });
+    
+    const messagesContainer = document.getElementById('messages');
+
+    function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Прокрутка при отправке сообщения
+    document.getElementById('chat-form').addEventListener('submit', () => {
+    setTimeout(scrollToBottom, 100); // Даем DOM обновиться
+    });
 });
