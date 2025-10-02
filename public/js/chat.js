@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/index.html';
         return;
     }
-
-    const socket = io();
+    const SOCKET_SERVER_URL = "https://test-admin-chat.onrender.com"; 
+    const socket = io(SOCKET_SERVER_URL);
     socket.emit('user connected', currentUser);
+
 
     // --- Все элементы страницы ---
     const searchInput = document.getElementById('search-input');
