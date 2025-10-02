@@ -27,6 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.getElementById('hamburger');
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('overlay');
+    const input = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+
+    input.addEventListener('input', () => {
+        const hasText = input.value.trim().length > 0;
+        sendButton.classList.toggle('visible', hasText);
+    });
+    
+    
     function openSidebar() {
         sidebar.classList.add('open');
         overlay.classList.add('visible');
