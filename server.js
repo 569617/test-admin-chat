@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const SOCKET_SERVER_URL = "https://test-admin-chat.onrender.com"; 
-const socket = io(SOCKET_SERVER_URL);
+
 socket.emit('user connected', currentUser);
 const kv = createClient({
     url: process.env.KV_REST_API_URL,
