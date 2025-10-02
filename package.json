@@ -1,0 +1,30 @@
+{
+  "name": "test-admin-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/569617/test-admin-chat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/569617/test-admin-chat/issues"
+  },
+  "homepage": "https://github.com/569617/test-admin-chat#readme",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

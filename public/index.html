@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.min.css">
+    <title>DODIC CHAT</title>
+</head>
+<body>
+    
+    <div class="auth-container">
+        <div id="login-view">
+            <h1>Вход</h1>
+            <form id="login-form">
+                <input type="text" placeholder="Имя пользователя" required autocomplete="username">
+                <input type="password" placeholder="Пароль" required autocomplete="current-password">
+                <button type="submit">Войти</button>
+                <div class="error-message" id="login-error"></div>
+            </form>
+            <p>Нет аккаунта? <a href="#" id="show-register">Зарегистрируйтесь</a></p>
+        </div>
+
+        <div id="register-view" class="hidden">
+            <h1>Регистрация</h1>
+            <form id="register-form">
+                <input type="text" placeholder="Придумайте имя" required autocomplete="username">
+                <input type="email" placeholder="Ваш Email" required autocomplete="new-email">
+                <input type="password" placeholder="Придумайте пароль" required autocomplete="new-password">
+                <button type="submit">Создать аккаунт</button>
+                <div class="error-message" id="register-error"></div>
+            </form>
+            <p>Уже есть аккаунт? <a href="#" id="show-login">Войдите</a></p>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>
