@@ -165,6 +165,9 @@ app.get('/messages/:room', async (req, res) => {
 // --- ЛОГИКА SOCKET.IO ---
 io.on('connection', (socket) => {
     socket.on('user connected', (username) => {
+        console.log(`Пользователь ${username} подключился с сокетом ${socket.id}`);
+        onlineUsers.set(username, socket.id);
+        socket.broadcast.emit('user status changed', { username, isOnline: true });
         onlineUsers.set(username, socket.id);
         // Вот эта строка "кричит" всем остальным:
         socket.broadcast.emit('user status changed', { username, isOnline: true }); 
