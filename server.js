@@ -170,6 +170,7 @@ io.on('connection', (socket) => {
             break;
         }
         }
+    });
 });
 
 const PORT = process.env.PORT || 3000;
