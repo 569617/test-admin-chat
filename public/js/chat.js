@@ -17,7 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentChatUser = null;
     let unreadCounts = {};
-
+    // --- ОТОБРАЖЕНИЕ ПРОФИЛЯ И ВЫХОД ---
+    myUsernameDisplay.textContent = currentUser;
+    logoutButton.addEventListener('click', () => {
+        localStorage.removeItem('username');
+        window.location.href = '/index.html';
+    });
     function addMessageToList(sender, message) {
         const li = document.createElement('li');
         li.className = sender === currentUser ? 'my-message' : 'other-message';
@@ -38,17 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadChatList() {
         try {
             const response = await fetch(`/chats?username=${currentUser}`);
-            const data = await response.json();
-            unreadCounts = data.unreadCounts || {};
+            const chats = await response.json();
             chatList.innerHTML = '';
-            (data.chatPartners || []).forEach(user => {
-                const count = unreadCounts[user] || 0;
+            chats.forEach(chat => {
                 const li = document.createElement('li');
                 li.className = 'chat-list-item';
-                li.dataset.username = user;
+                li.dataset.username = chat.username;
                 li.innerHTML = `
-                    <span class="chat-name">${user}</span>
-                    ${count > 0 ? `<span class="unread-badge">${count}</span>` : ''}
+                    <div class="chat-info">
+                        <span class="chat-name">${chat.username}</span>
+                        <span class="chat-status ${chat.isOnline ? 'status-online' : 'status-offline'}">
+                            ${chat.isOnline ? 'Онлайн' : 'Оффлайн'}
+                        </span>
+                    </div>
+                    <div class="chat-badge-menu-wrapper">
+                        ${chat.unreadCount > 0 ? `<span class="unread-badge">${chat.unreadCount}</span>` : ''}
+                        <div class="chat-item-menu">
+                            <button class="menu-button">⋮</button>
+                            <div class="menu-content hidden">
+                                <a href="#" class="delete-chat-button">Удалить</a>
+                            </div>
+                        </div>
+                    </div>
                 `;
                 chatList.appendChild(li);
             });
@@ -111,6 +127,28 @@ document.addEventListener('DOMContentLoaded', () => {
             searchResults.innerHTML = '';
         }
     });
+    chatList.addEventListener('click', (e) => {
+        const menuButton = e.target.closest('.menu-button');
+        const deleteButton = e.target.closest('.delete-chat-button');
+        const chatItem = e.target.closest('li.chat-list-item');
+
+        if (menuButton) { // Клик по трём точкам
+            const menu = menuButton.nextElementSibling;
+            menu.classList.toggle('hidden');
+        } else if (deleteButton) { // Клик по кнопке "Удалить"
+            const otherUser = chatItem.dataset.username;
+            if (confirm(`Вы уверены, что хотите удалить чат с ${otherUser}?`)) {
+                fetch('/chats', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentUser, otherUser })
+                }).then(() => loadChatList());
+            }
+        } else if (chatItem) { // Клик по самому чату
+            const otherUser = chatItem.dataset.username;
+            startChat(otherUser);
+        }
+    });
 
     chatList.addEventListener('click', (e) => {
         const targetLi = e.target.closest('li.chat-list-item');
@@ -139,6 +177,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ currentUser, otherUser: data.from })
             });
+        }
+    });
+    // НОВЫЙ обработчик: изменение статуса пользователя
+    socket.on('user status changed', ({ username, isOnline }) => {
+        const chatItem = chatList.querySelector(`[data-username="${username}"]`);
+        if (chatItem) {
+            const statusElement = chatItem.querySelector('.chat-status');
+            statusElement.textContent = isOnline ? 'Онлайн' : 'Оффлайн';
+            statusElement.className = `chat-status ${isOnline ? 'status-online' : 'status-offline'}`;
         }
     });
 
